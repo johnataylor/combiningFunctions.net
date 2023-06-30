@@ -1,7 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using CombiningFunctions;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 
 var model = "gpt-3.5-turbo-0613";
 var api_key = "";
@@ -20,8 +19,11 @@ var functionImplementations = new Dictionary<string, Func<JsonNode, JsonNode>>
 };
 
 //var result = await Resolver.Run("What is the summary for work order 00052?", model, api_key, functionDescriptions, functionImplementations);
-var result = await Resolver.Run("what are the 'in progress' work orders for account 01234?", model, api_key, functionDescriptions, functionImplementations);
-Console.WriteLine(result);
+//var result = await Resolver.Run("what are the 'in progress' work orders for account 01234?", model, api_key, functionDescriptions, functionImplementations);
+//Console.WriteLine(result);
+
+// this illustrates that "functions" replace prompts that were designed to extract structure
+await Test.TestAsync($"Create a work order from the following email ```{CreateEmail()}```", model, api_key, functionDescriptions, null);
 
 JsonNode get_work_order_details(JsonNode arguments)
 {
@@ -50,4 +52,24 @@ JsonNode get_work_orders_by_account(JsonNode arguments)
     Console.WriteLine($"get_work_orders_by_account('{arguments}')");
 
     return new JsonArray { new JsonObject { { "work_order_id", "00052" } }, new JsonObject { { "work_order_id", "00042" } }, new JsonObject { { "work_order_id", "52341" } } };
+}
+
+string CreateEmail()
+{
+    return @"
+Subject: Denver Hospital MRI Machine
+From: Kaitlyn (Denver Hospital Adminstration)    
+To: Bob (Woodgrove Medical Systems)    
+  
+Dear Bob,    
+I would like to schedule the annual inspection of our MRI machine.
+  
+It's coming up to 12 month so there is some urgency as we can't afford any downtime.
+  
+Apologies for not getting this sorted out weeks ago but we've had some staff turn over.
+
+Looking forward to hearing back from you.    
+  
+Best regards,    
+Kaitlyn";
 }
