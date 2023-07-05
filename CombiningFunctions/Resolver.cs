@@ -39,7 +39,8 @@ namespace CombiningFunctions
                         {
                             var functionResponse = func(argumentsArguments);
 
-                            messages.Add(new JsonObject { { "role", "user" }, { "content", $"result from function:```{functionResponse}```" } });
+                            // add the function result in the the messages array - note the content should be a string
+                            messages.Add(new JsonObject { { "role", "function" }, { "name", functionName }, { "content", functionResponse.ToJsonString() } });
                         }
                         else
                         {

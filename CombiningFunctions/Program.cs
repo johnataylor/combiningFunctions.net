@@ -1,7 +1,5 @@
-﻿// See https://aka.ms/new-console-template for more information
-using CombiningFunctions;
+﻿using CombiningFunctions;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 
 var model = "gpt-3.5-turbo-0613";
 var api_key = "";
