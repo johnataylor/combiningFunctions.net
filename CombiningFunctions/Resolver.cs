@@ -20,6 +20,7 @@ namespace CombiningFunctions
 
                 var choice = result["choices"]?[0] ?? throw new InvalidDataException();
 
+                // add to the transcript
                 messages.Add(JsonNode.Parse(choice["message"]?.ToJsonString() ?? throw new InvalidDataException()));
 
                 var finishReason = choice["finish_reason"]?.GetValue<string>() ?? throw new InvalidDataException();
@@ -37,6 +38,7 @@ namespace CombiningFunctions
 
                         if (functionImplementations.TryGetValue(functionName, out var func))
                         {
+                            // call the function
                             var functionResponse = func(argumentsArguments);
 
                             // add the function result in the the messages array - note the content should be a string
@@ -50,6 +52,8 @@ namespace CombiningFunctions
                 }
                 else
                 {
+                    // finish reason is not function_call so we must be done!
+
                     // TODO: check the finish reason is stop not length!
 
                     return choice["message"]?["content"]?.GetValue<string>() ?? throw new InvalidDataException();

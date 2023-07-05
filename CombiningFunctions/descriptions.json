@@ -44,5 +44,31 @@
       },
       "required": [ "from", "to" ]
     }
+  },
+  {
+    "name": "create_work_order",
+    "description": "Use this function to create work orders from email",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "A summary of the conversation in the email thread, identifying main points of discussion and any conclusions that were reached. Do not incorporate other general knowledge. Summary is in plain text, in complete sentences, with no markup or tags."
+        },
+        "priority": {
+          "type": "string",
+          "description": "The priority of the work order, this should be one of High, Medium, Low or NA if there is ambiguity."
+        },
+        "workOrderType": {
+          "type": "string",
+          "description": "The type of the work order, this should be one of Installation, Repair, Removal or NA if there is ambiguity."
+        },
+        "incidentType": {
+          "type": "string",
+          "description": "The incident type of the work order, this should be one of MRI Installation, MRI Maintenance or NA if there is ambiguity."
+        }
+      },
+      "required": [ "summary", "priority", "workOrderType", "incidentType" ]
+    }
   }
 ]
