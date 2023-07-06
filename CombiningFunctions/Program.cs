@@ -13,22 +13,23 @@ var functionDescriptions = JsonNode.Parse(File.ReadAllText("descriptions.json"))
 
 var functionImplementations = new Dictionary<string, Func<JsonNode, JsonNode>>
 {
-    { "get_work_order_details", get_work_order_details },
+    //{ "get_work_order_details", get_work_order_details },
+    { "get_multiple_work_order_details", arguments => mapcar(arguments["work_order_ids"]?.AsArray(), get_work_order_details) },
     { "get_work_orders_by_account", get_work_orders_by_account },
 };
 
-//var result = await Resolver.Run("What is the summary for work order 00052?", model, api_key, functionDescriptions, functionImplementations);
-//var result = await Resolver.Run("what are the 'in progress' work orders for account 01234?", model, api_key, functionDescriptions, functionImplementations);
-//Console.WriteLine(result);
+//var result = await Resolver.Run("What is the summary for work order 52?", model, api_key, functionDescriptions, functionImplementations);
+var result = await Resolver.Run("what are the 'in progress' work orders for account 01234?", model, api_key, functionDescriptions, functionImplementations);
+Console.WriteLine(result);
 
 // this illustrates that "functions" replace prompts that were designed to extract structure
-await Test.TestAsync($"Create a work order from the following email ```{CreateEmail()}```", model, api_key, functionDescriptions, null);
+//await Test.TestAsync($"Create a work order from the following email ```{CreateEmail()}```", model, api_key, functionDescriptions, null);
 
-JsonNode get_work_order_details(JsonNode arguments)
+JsonNode get_work_order_details(JsonNode? arguments)
 {
-    Console.WriteLine($"get_work_order_details('{arguments}')");
+    var work_order_id = arguments?["work_order_id"]?.GetValue<string>() ?? throw new InvalidDataException("expected work_order_id");
 
-    var work_order_id = arguments["work_order_id"]?.GetValue<string>();
+    work_order_id = work_order_id.PadLeft(5, '0');
 
     switch (work_order_id)
     {
@@ -46,10 +47,14 @@ JsonNode get_work_order_details(JsonNode arguments)
     }
 }
 
+JsonNode mapcar(JsonArray? array, Func<JsonNode?, JsonNode> func)
+{
+    array = array ?? throw new ArgumentNullException("array");
+    return new JsonArray(array.Select((element, Index) => func(element)).ToArray());
+}
+
 JsonNode get_work_orders_by_account(JsonNode arguments)
 {
-    Console.WriteLine($"get_work_orders_by_account('{arguments}')");
-
     return new JsonArray { new JsonObject { { "work_order_id", "00052" } }, new JsonObject { { "work_order_id", "00042" } }, new JsonObject { { "work_order_id", "52341" } } };
 }
 
