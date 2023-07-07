@@ -38,8 +38,12 @@ namespace CombiningFunctions
 
                         if (functionImplementations.TryGetValue(functionName, out var func))
                         {
+                            Trace($"function call:\n{functionName}('{argumentsArguments}')");
+
                             // call the function
                             var functionResponse = func(argumentsArguments);
+
+                            Trace($"response:\n'{functionResponse}'");
 
                             // add the function result in the the messages array - note the content should be a string
                             messages.Add(new JsonObject { { "role", "function" }, { "name", functionName }, { "content", functionResponse.ToJsonString() } });
@@ -54,13 +58,28 @@ namespace CombiningFunctions
                 {
                     // finish reason is not function_call so we must be done!
 
-                    // TODO: check the finish reason is stop not length!
+                    if (finishReason == "length")
+                    {
+                        throw new InvalidDataException("$unexpected finish reason length");
+                    }
 
-                    return choice["message"]?["content"]?.GetValue<string>() ?? throw new InvalidDataException();
+                    var response = choice["message"]?["content"]?.GetValue<string>() ?? throw new InvalidDataException();
+
+                    return response;
                 }
             }
 
+            Trace("reaching max iterations");
+
             return "unable to answer the question";
+        }
+
+        private static void Trace(string message)
+        {
+            var forgroundColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(message);
+            Console.ForegroundColor = forgroundColor;
         }
     }
 }

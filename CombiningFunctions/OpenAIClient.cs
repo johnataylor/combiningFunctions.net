@@ -30,7 +30,11 @@ namespace CombiningFunctions
             var client = new HttpClient();
             var response = await client.SendAsync(request);
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorResponse = await response.Content.ReadAsStringAsync();
+                throw new InvalidOperationException(errorResponse);
+            }
 
             var result = await response.Content.ReadAsStringAsync() ?? throw new InvalidDataException();
 
