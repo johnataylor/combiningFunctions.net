@@ -18,12 +18,14 @@ var functionImplementations = new Dictionary<string, Func<JsonNode, JsonNode>>
     { "get_work_orders_by_account", get_work_orders_by_account },
 };
 
-//var result = await Resolver.Run("What is the summary for work order 52?", model, api_key, functionDescriptions, functionImplementations);
-var result = await Resolver.Run("what are the 'in progress' work orders for account 01234?", model, api_key, functionDescriptions, functionImplementations);
+var result = await Resolver.Run("What is the summary for work order 52?", model, api_key, functionDescriptions, functionImplementations);
+//var result = await Resolver.Run("what are the 'in progress' work orders for account 01234?", model, api_key, functionDescriptions, functionImplementations);
 Console.WriteLine(result);
 
 // this illustrates that "functions" replace prompts that were designed to extract structure
 //await Test.TestAsync($"Create a work order from the following email ```{CreateEmail()}```", model, api_key, functionDescriptions, null);
+
+//await AzureRepro.Test();
 
 JsonNode get_work_order_details(JsonNode? arguments)
 {

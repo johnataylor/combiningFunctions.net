@@ -21,7 +21,7 @@ namespace CombiningFunctions
                 var choice = result["choices"]?[0] ?? throw new InvalidDataException();
 
                 // add to the transcript
-                messages.Add(JsonNode.Parse(choice["message"]?.ToJsonString() ?? throw new InvalidDataException()));
+                //messages.Add(JsonNode.Parse(choice["message"]?.ToJsonString() ?? throw new InvalidDataException()));
 
                 var finishReason = choice["finish_reason"]?.GetValue<string>() ?? throw new InvalidDataException();
 
@@ -31,6 +31,14 @@ namespace CombiningFunctions
                     var functionName = choice["message"]?["function_call"]?["name"]?.GetValue<string>() ?? throw new InvalidDataException();
 
                     var arguments = choice["message"]?["function_call"]?["arguments"]?.GetValue<string>();
+
+                    // add to the transcript
+                    //messages.Add(JsonNode.Parse(choice["message"]?.ToJsonString() ?? throw new InvalidDataException()));
+
+                    var function_call = new JsonObject { { "name", functionName }, { "arguments", arguments } };
+                    messages.Add(new JsonObject { { "role", "assistant" }, { "function_call", function_call }, { "content", "" } });
+                    //messages.Add(new JsonObject { { "role", "assistant" }, { "function_call", function_call } });
+
                     if (arguments != null)
                     {
                         // arguments is a string of JSON embedded in a property of type string
@@ -62,6 +70,9 @@ namespace CombiningFunctions
                     {
                         throw new InvalidDataException("$unexpected finish reason length");
                     }
+
+                    // add to the transcript
+                    messages.Add(JsonNode.Parse(choice["message"]?.ToJsonString() ?? throw new InvalidDataException()));
 
                     var response = choice["message"]?["content"]?.GetValue<string>() ?? throw new InvalidDataException();
 
